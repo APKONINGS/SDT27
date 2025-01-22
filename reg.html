@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Authentication</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #d7c49e; 
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            color: #333; 
+        }
+        .container {
+            background: #fff; 
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+            width: 350px;
+        }
+        h1 {
+            text-align: center;
+            color: #8b5a2b; 
+            margin-bottom: 20px;
+            font-weight: 300; 
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #5c3a29; 
+            font-weight: bold;
+        }
+        input[type="text"],
+        input[type="email"],
+        input[type="password"] {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 15px;
+            border: 1px solid #b3a392; 
+            border-radius: 8px;
+            background-color: #f9f6f0; 
+            color: #333; 
+            font-family: 'Courier New', Courier, monospace; 
+            font-size: 16px; 
+            transition: border-color 0.3s;
+        }
+        input[type="text"]:focus,
+        input[type="email"]:focus,
+        input[type="password"]:focus {
+            border-color: #8b5a2b; 
+            outline: none;
+        }
+        button {
+            width: 100%;
+            padding: 12px;
+            background-color: #8b5a2b; 
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+            font-weight: bold; 
+        }
+        button:hover {
+            background-color: #7a4e2b; 
+        }
+        .error {
+            color: #d9534f; 
+            font-size: 0.9em;
+            margin-top: 10px;
+        }
+        .form-section {
+            display: none;
+        }
+        .form-section.active {
+            display: block;
+        }
+        .toggle-link {
+            text-align: center;
+            margin-top: 10px;
+            cursor: pointer;
+            color: #8b5a2b; 
+            font-weight: bold;
+        }
+        .toggle-link:hover {
+            text-decoration: underline;
+        }
+        body {
+           background-image: url('img/td4.jpeg'); 
+            background-size: cover; 
+            background-position: center; 
+            background-repeat: no-repeat; 
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>User Authentication</h1>
+        
+        
+        <div id="registrationForm" class="form-section active">
+            <h2>Register</h2>
+            <form id="registerForm">
+                <label for="reg-username">Username:</label>
+                <input type="text" id="reg-username" name="username" required>
+                <label for="reg-email">Email:</label>
+                <input type="email" id="reg-email" name="email" required>
+                <label for="reg-password">Password:</label>
+                <input type="password" id="reg-password" name="password" required>
+                <button type="submit">Register</button>
+                <div class="error" id="reg-errorMessage"></div>
+            </form>
+            <div class="toggle-link" onclick="toggleForms()">Already have an account? Log in</div>
+        </div>
+
+        
+        <div id="loginForm" class="form-section">
+            <h2>Login</h2>
+            <form id="loginForm">
+                <label for="login-username">Username:</label>
+                <input type="text" id="login-username" name="username" required>
+                <label for="login-password">Password:</label>
+                <input type="password" id="login-password" name="password" required>
+                <button type="submit">Login</button>
+                <div class="error" id="login-errorMessage"></div>
+            </form>
+            <div class="toggle-link" onclick="toggleForms()">Don't have an account? Register</div>
+        </div>
+    </div>
+
+    <script>
+        // Toggle between Login and Registration forms
+        function toggleForms() {
+            document.getElementById('registrationForm').classList.toggle('active');
+            document.getElementById('loginForm').classList.toggle('active');
+        }
+
+        
+        document.getElementById('registerForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const formData = new FormData(this);
+            const data = Object.fromEntries(formData);
+
+            fetch('http://localhost:3000/register', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok' + response.statusText);
+                }
+                return response.text();
+            })
+            .then(message => {
+                alert(message);
+                window.location.href = 'index.html'; 
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                document.getElementById('reg-errorMessage').textContent = 'Failed to register: ' + error.message;
+            });
+        });
+
+        // Login Form Submission
+        document.getElementById('loginForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const formData = new FormData(this);
+            const data = Object.fromEntries(formData);
+
+            fetch('http://localhost:3000/login', { // Adjust the endpoint for login
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok' + response.statusText);
+                }
+                return response.text();
+            })
+            .then(message => {
+                alert(message);
+                // Redirect to the todo page after successful login
+                window.location.href = 'index.html'; // Adjust the path as necessary
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                document.getElementById('login-errorMessage').textContent = 'Failed to log in: ' + error.message;
+            });
+        });
+    </script>
+</body>
+</html>

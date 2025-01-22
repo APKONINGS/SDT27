@@ -1,17 +1,192 @@
-<!DOCTYPE html> 
+<!DOCTYPE html>
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>To-Do List App</title>
-    <link rel="stylesheet" href="style.css">
+    <title>Task Manager</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        body {
+            background-color: #d7c49e; /* Warm brown background */
+        }
+        .navbar {
+            background-color: #8b5a2b; /* Dark brown for navbar */
+            height: 100vh; /* Full height */
+            position: fixed; /* Fixed position */
+            width: 250px; /* Width of the navbar */
+            padding-top: 10px; /* Minimal padding at the top */
+        }
+        .navbar-brand {
+            color: white; /* White text for brand */
+            font-size: 1.5em; /* Larger font size */
+            display: flex;
+            align-items: center;
+            padding: 0; /* Remove padding */
+            margin-bottom: 20px; /* Space below the profile picture */
+        }
+        .navbar-brand img {
+            border-radius: 50%; /* Circular profile picture */
+            width: 40px; /* Width of the profile picture */
+            height: 40px; /* Height of the profile picture */
+            margin-right: 10px; /* Space between image and text */
+        }
+        .navbar-brand:hover {
+            color: #f8f9fa; /* Light color on hover */
+        }
+        .nav-link {
+            color: #f8f9fa; /* Light text for links */
+            margin: 10px 0; /* Margin between links */
+        }
+        .nav-link:hover {
+            background-color: #7a4e2b; /* Hover effect */
+            border-radius: 5px; /* Rounded corners */
+        }
+        .container {
+            margin-left: 270px; /* Space for the navbar */
+            padding: 20px; /* Padding for the content */
+        }
+        h1 {
+            margin-bottom: 30px;
+            color: #8b5a2b; /* Dark brown */
+        }
+        .task-card {
+            margin-bottom: 20px;
+        }
+        .completed {
+            text-decoration: line-through;
+            background-color: #e9ecef; /* Light gray for completed tasks */
+        }
+        .btn-primary {
+            background-color: #8b5a2b; /* Dark brown */
+            border: none;
+        }
+        .btn-primary:hover {
+            background-color: #7a4e2b; /* Darker brown on hover */
+        }
+    </style>
 </head>
 <body>
-    <div class="container">
-        <h1>To-Do List</h1>
-        <input type="text" id="new-task" placeholder="Add a new task...">
-        <button id="add-task">Add Task</button>
-        <ul id="task-list"></ul>
+
+<!-- Navbar -->
+<nav class="navbar">
+    <div class="text-center">
+        <a class="navbar-brand" href="#">
+            <img src="https://via.placeholder.com/40" alt="Profile Picture"> <!-- Placeholder for profile picture -->
+            Hello, User
+        </a>
     </div>
-    <script src="script.js"></script>
+    <div class="nav flex-column">
+        <a class="nav-link" href="#" id="addTaskBtn">
+            <i class="fas fa-plus"></i> Add Task
+        </a>
+        <a class="nav-link" href="#" id="searchTaskBtn">
+            <i class="fas fa-search"></i> Search
+        </a>
+        <a class="nav-link" href="#" id="upcomingTasksBtn">
+            <i class="fas fa-calendar-alt"></i> Upcoming Tasks
+        </a>
+    </div>
+</nav>
+
+
+<div class="container">
+    <h1 class="text-center">Task Manager</h1>
+    
+    <!-- Task Input Form -->
+    <form id="taskForm" class="form-inline justify-content-center mb-4">
+        <input type="text" class="form-control mr-2" id="taskInput" placeholder="Enter a new task" required>
+        <select id="taskPriority" class="form-control mr-2">
+            <option value="low">Low Priority</option>
+            <option value="medium">Medium Priority</option>
+            <option value="high">High Priority</option>
+        </select>
+        <input type="date" class="form-control mr-2" id="taskDueDate">
+        <button type="submit" class="btn btn-primary">Add Task</button>
+    </form>
+
+   
+    <div class="text-center mb-4">
+        <button class="btn btn-outline-primary" onclick="filterTasks('all')">All Tasks</button>
+        <button class="btn btn-outline-primary" onclick="filterTasks('active')">Active Tasks</button>
+        <button class="btn btn-outline-primary" onclick="filterTasks('completed')">Completed Tasks</button>
+    </div>
+
+  
+    <div id="taskList" class="row"></div>
+</div>
+
+
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+
+<script>
+    $(document).ready(function() {
+        let tasks = [];
+
+        // Add Task
+        $('#taskForm').on('submit', function(e) {
+            e.preventDefault();
+            const taskText = $('#taskInput').val();
+            const taskPriority = $('#taskPriority').val();
+            const taskDueDate = $('#taskDueDate').val();
+            const task = {
+                text: taskText,
+                priority: taskPriority,
+                dueDate: taskDueDate,
+                completed: false
+            };
+            tasks.push(task);
+            $('#taskInput').val('');
+            $('#taskPriority').val('low');
+            $('#taskDueDate').val('');
+            renderTasks();
+        });
+
+        // Render Tasks
+        function renderTasks(filter = 'all') {
+            $('#taskList').empty();
+            tasks.forEach((task, index) => {
+                if (filter === 'active' && task.completed) return;
+                if (filter === 'completed' && !task.completed) return;
+
+                $('#taskList').append(`
+                    <div class="col-md-4">
+                        <div class="card task-card ${task.completed ? 'completed' : ''}">
+                            <div class="card-body">
+                                <h5 class="card-title">${task.text}</h5>
+                                <h6 class="card-subtitle mb-2 text-muted">Priority: ${task.priority}</h6>
+                                <p class="card-text">Due Date: ${task.dueDate || 'No due date'}</p>
+                                <button class="btn btn-success" onclick="toggleComplete(${index})">
+                                    ${task.completed ? 'Undo' : 'Complete'}
+                                </button>
+                                <button class="btn btn-danger" onclick="deleteTask(${index})">Delete</button>
+                            </div>
+                        </div>
+                    </div>
+                `);
+            });
+        }
+
+        // Toggle Task Completion
+        window.toggleComplete = function(index) {
+            tasks[index].completed = !tasks[index].completed;
+            renderTasks();
+        };
+
+        // Delete Task
+        window.deleteTask = function(index) {
+            tasks.splice(index, 1);
+            renderTasks();
+        };
+
+        // Filter Tasks
+        window.filterTasks = function(filter) {
+            renderTasks(filter);
+        };
+    });
+</script>
+
 </body>
 </html>

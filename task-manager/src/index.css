@@ -1,0 +1,73 @@
+body {
+  background-color: #d7c49e; /* Warm brown background */
+}
+.navbar {
+  background-color: #8b5a2b; /* Dark brown for navbar */
+  height: 100vh; /* Full height */
+  position: fixed; /* Fixed position */
+  width: 250px; /* Width of the navbar */
+  padding-top: 10px; /* Minimal padding at the top */
+}
+.navbar-brand {
+  color: white; /* White text for brand */
+  font-size: 1.5em; /* Larger font size */
+  display: flex;
+  align-items: center;
+  padding: 0; /* Remove padding */
+  margin-bottom: 20px; /* Space below the profile picture */
+}
+.navbar-brand img {
+  border-radius: 50%; /* Circular profile picture */
+  width: 40px; /* Width of the profile picture */
+  height: 40px; /* Height of the profile picture */
+  margin-right: 10px; /* Space between image and text */
+}
+.navbar-brand:hover {
+  color: #f8f9fa; /* Light color on hover */
+}
+.nav-link {
+  color: #f8f9fa; /* Light text for links */
+  margin: 10px 0; /* Margin between links */
+}
+.nav-link:hover {
+  background-color: #7a4e2b; /* Hover effect */
+  border-radius: 5px; /* Rounded corners */
+}
+.container {
+  margin-left: 270px; /* Space for the navbar */
+  padding: 20px; /* Padding for the content */
+}
+h1 {
+  margin-bottom: 30px;
+  color: #8b5a2b; /* Dark brown */
+}
+.task-card {
+  margin-bottom: 20px;
+}
+.completed {
+  text-decoration: line-through;
+  background-color: #e9ecef; /* Light gray for completed tasks */
+}
+.btn-primary {
+  background-color: #8b5a2b; /* Dark brown */
+  border: none;
+}
+.btn-primary:hover {
+  background-color: #7a4e2b; /* Darker brown on hover */
+}
+
+@media (max-width: 768px) {
+  .navbar {
+    width: 100%; /* Navbar takes full width */
+    height: auto; /* Adjust height */
+  }
+  .container {
+    margin-left: 0; /* Reset margin for mobile */
+    padding: 10px; /* Reduce padding */
+  }
+}
+
+.btn-primary:focus {
+  outline: none; /* Remove default outline */
+  box-shadow: 0 0 0 4px rgba(139, 90, 43, 0.5); /* Custom focus style */
+}
