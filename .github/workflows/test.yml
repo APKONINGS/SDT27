@@ -1,25 +1,30 @@
-name: Python Tests
+name: Node.js CI
 
-on: [push, pull_request]
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
 
 jobs:
-  test:
+  build:
     runs-on: windows-latest
 
+    strategy:
+      matrix:
+        node-version: [14.x, 16.x]
+
     steps:
-    - name: Check out code
+    - name: Checkout code
       uses: actions/checkout@v2
 
-    - name: Set up Python
-      uses: actions/setup-python@v2
+    - name: Set up Node.js
+      uses: actions/setup-node@v2
       with:
-        python-version: '3.8'  # Specify your desired Python version
+        node-version: ${{ matrix.node-version }}
 
     - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install pytest selenium
+      run: npm install
 
     - name: Run tests
-      run: |
-        pytest test_form.py
+      run: npx mocha test.js
