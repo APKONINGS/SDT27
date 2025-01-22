@@ -1,30 +1,44 @@
-name: Node.js CI
+const request = require('supertest');
+const app = require('./server'); 
+const { expect } = require('chai');
 
-on:
-  push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
+describe('API Tests', () => {
+    describe('POST /register', () => {
+        it('should register a new user', (done) => {
+            request(app)
+                .post('/register')
+                .send({ username: 'testuser', email: 'test@example.com', password: 'testpassword' })
+                .expect(201)
+                .expect((res) => {
+                    expect(res.text).to.equal('User registered successfully');
+                })
+                .end(done);
+        });
 
-jobs:
-  build:
-    runs-on: windows-latest
+        it('should return an error if required fields are missing', (done) => {
+            request(app)
+                .post('/register')
+                .send({ username: 'testuser', email: 'test@example.com' })
+                .expect(500)
+                .end(done);
+        });
+    });
 
-    strategy:
-      matrix:
-        node-version: [14.x, 16.x]
+    describe('POST /login', () => {
+        it('should login a user', (done) => {
+            request(app)
+                .post('/login')
+                .send({ username: 'testuser', password: 'testpassword' })
+                .expect(200)
+                .end(done);
+        });
 
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
-
-    - name: Set up Node.js
-      uses: actions/setup-node@v2
-      with:
-        node-version: ${{ matrix.node-version }}
-
-    - name: Install dependencies
-      run: npm install
-
-    - name: Run tests
-      run: npx mocha test.js
+        it('should return an error if username or password is incorrect', (done) => {
+            request(app)
+                .post('/login')
+                .send({ username: 'testuser', password: 'wrongpassword' })
+                .expect(401)
+                .end(done);
+        });
+    });
+});
